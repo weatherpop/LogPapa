@@ -47,7 +47,13 @@ class LogProcessor(object):
         raise NotImplementedError(
             "you need to implement the fucntion [analysis_log_line] for your LogProcessor subclass")        
 
-    def writing_result(self, stat_dict):
+    def _open_result_file(self):
+        return open(self.result_file, "wb") 
+
+    def _close_result_file(self, result_file):
+        result_file.close()
+
+    def writing_result(self, stat_dict, wf):
         """
         (for overriding)
         write the statistic result into file
@@ -56,9 +62,8 @@ class LogProcessor(object):
 
         no return value        
         """
-        with open(self.result_file, "wb") as wf:
-            writer = csv.writer(wf)
-            writer.writerows([[k.strip(), str(v).strip()] for k, v in stat_dict.items()])
+        writer = csv.writer(wf)
+        writer.writerows([[k.strip(), str(v).strip()] for k, v in stat_dict.items()])
 
     def process(self):
         """
@@ -79,4 +84,6 @@ class LogProcessor(object):
 
         # 3.write the statistic result into file
         self.logger.info("writing stat result => [%s]...", self.result_file)
-        self.writing_result(self.stat_result_class)
+        wf = self._open_result_file()
+        self.writing_result(self.stat_result_class, wf)
+        self._close_result_file(wf)
