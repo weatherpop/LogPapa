@@ -15,11 +15,9 @@ logging.basicConfig(level = logging.DEBUG)
 class TestLogProcessor(unittest.TestCase):
     """unittest for TestLogProcessor"""
 
-    def setUp(self):
-        self.proc_time = datetime.datetime(2014, 1, 1)
-
+    def _mock_file_open(self):
         s_io = StringIO("FILE LINE 0")
-        self.m = mock_open(read_data=s_io)
+        m = mock_open(read_data=s_io)
         def write(data):
             s_io.write(data)
         def read():
@@ -32,12 +30,19 @@ class TestLogProcessor(unittest.TestCase):
             s_io.truncate(size=size)
         def s_io_iter(self):
             yield readline()
-        self.m.return_value.write = write
-        self.m.return_value.read = read
-        self.m.return_value.readline = readline
-        self.m.return_value.seek = seek
-        self.m.return_value.truncate = truncate
-        self.m.return_value.__iter__ = s_io_iter
+        m.return_value.write = write
+        m.return_value.read = read
+        m.return_value.readline = readline
+        m.return_value.seek = seek
+        m.return_value.truncate = truncate
+        m.return_value.__iter__ = s_io_iter
+
+        return m
+
+    def setUp(self):
+        self.proc_time = datetime.datetime(2014, 1, 1)
+
+        self.m = self._mock_file_open()
 
         self.proc =  LogProcessor(
             "./test_result_file.txt", 

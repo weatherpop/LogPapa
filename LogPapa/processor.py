@@ -31,11 +31,11 @@ class DateTailLogProcessor(LogProcessor):
         self.stat_key_regex = stat_key_regex
         self.file_glob = file_glob
 
-        self.key_regex_compiled = re.compile(key_regex)
+        self.key_regex_compiled = re.compile(key_regex, re.IGNORECASE)
         self.ignore_info_regex_compiled = \
-            [re.compile(e) for e in ignore_info_regix] if ignore_info_regix else []
+            [re.compile(e, re.IGNORECASE) for e in ignore_info_regix] if ignore_info_regix else []
         self.stat_key_regex_compiled = \
-            re.compile(stat_key_regex) if stat_key_regex else None
+            re.compile(stat_key_regex, re.IGNORECASE) if stat_key_regex else None
 
         self.file_path_list = []
 
